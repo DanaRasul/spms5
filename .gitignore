@@ -1,0 +1,59 @@
+# Node modules
+node_modules/
+package-lock.json
+
+# Next.js build output
+.next/
+out/
+
+# Production build
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Vercel deployment
+.vercel/
+
+# Optional: if using TypeScript
+*.tsbuildinfo
+
+# Optional: if using testing tools
+coverage/
+jest-test-results.json
+
+# Optional: if using IDEs
+.vscode/
+.idea/
+
+# Optional: if using TurboRepo or monorepo
+turbo/
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Database
+*.sql
+
+# ZIP files
+*.zip
+
+# Temporary text files
+*.txt
+.env
+
+*.zip
+*.sql
+*.txt
+
+parking-full-fix/
+spms-v2-fix/
+vehicle-registration-fix/
