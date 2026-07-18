@@ -6,7 +6,7 @@
 -- vehicles that exit AFTER this migration get a persisted receipt number.
 
 ALTER TABLE `vehicle_records`
-  ADD COLUMN IF NOT EXISTS `receiptNumber` VARCHAR(191) NULL,
-  ADD COLUMN IF NOT EXISTS `receiptGeneratedAt` DATETIME(3) NULL;
+  ADD COLUMN `receiptNumber` VARCHAR(191) NULL,
+  ADD COLUMN `receiptGeneratedAt` DATETIME(3) NULL;
 
-CREATE UNIQUE INDEX IF NOT EXISTS `vehicle_records_receiptNumber_key` ON `vehicle_records`(`receiptNumber`);
+CREATE UNIQUE INDEX `vehicle_records_receiptNumber_key` ON `vehicle_records`(`receiptNumber`);

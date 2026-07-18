@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,20 +8,19 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  username  String   @unique
-  fullName  String
-  email     String   @unique
-  password  String
-  role      UserRole @default(user_admin)
-  enabled   Boolean  @default(true)
-  branchId  String?
-  createdAt DateTime @default(now())
-  lastLogin DateTime?
-
-  branch       ParkingLocation? @relation("BranchUsers", fields: [branchId], references: [id])
+  id           String           @id @default(cuid())
+  username     String           @unique
+  fullName     String
+  email        String           @unique
+  password     String
+  role         UserRole         @default(user_admin)
+  enabled      Boolean          @default(true)
+  branchId     String?
+  createdAt    DateTime         @default(now())
+  lastLogin    DateTime?
   activityLogs ActivityLog[]
   failedLogins FailedLogin[]
+  branch       ParkingLocation? @relation("BranchUsers", fields: [branchId], references: [id])
 
   @@index([role])
   @@index([branchId])
@@ -34,12 +30,11 @@ model User {
 }
 
 model FailedLogin {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   userId      String
-  attemptedAt DateTime @default(now())
+  attemptedAt DateTime  @default(now())
   lockedUntil DateTime?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([attemptedAt])
@@ -47,23 +42,19 @@ model FailedLogin {
 }
 
 model ParkingLocation {
-  id          String   @id @default(cuid())
-  name        String
-  address     String
-  phoneNumber String?
-  capacity    Int      @default(50)
-  spacePrefix String   @default("S")
-  status      LocationStatus @default(active)
-  hourlyRate1 Float    @default(1000)
-  hourlyRate2 Float    @default(1500)
-  hourlyRate3 Float    @default(2000)
-  createdAt   DateTime @default(now())
-
-  users        User[]          @relation("BranchUsers")
-  spaces       ParkingSpace[]
-  vehicles     VehicleRecord[]
-  subscribers  MonthlySubscriber[]
+  id           String              @id @default(cuid())
+  name         String
+  address      String
+  phoneNumber  String
+  capacity     Int                 @default(50)
+  status       LocationStatus      @default(active)
+  createdAt    DateTime            @default(now())
+  spacePrefix  String              @default("S")
   activityLogs ActivityLog[]
+  subscribers  MonthlySubscriber[]
+  spaces       ParkingSpace[]
+  users        User[]              @relation("BranchUsers")
+  vehicles     VehicleRecord[]
 
   @@index([status])
   @@index([createdAt])
@@ -71,13 +62,12 @@ model ParkingLocation {
 }
 
 model ParkingSpace {
-  id           String      @id @default(cuid())
-  spaceNumber  String
-  status       SpaceStatus @default(available)
-  locationId   String
-
-  location ParkingLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  vehicles VehicleRecord[]
+  id          String          @id @default(cuid())
+  spaceNumber String
+  status      SpaceStatus     @default(available)
+  locationId  String
+  location    ParkingLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  vehicles    VehicleRecord[]
 
   @@unique([spaceNumber, locationId])
   @@index([locationId])
@@ -87,32 +77,27 @@ model ParkingSpace {
 }
 
 model VehicleRecord {
-  id                String        @id @default(cuid())
-  plateNumber       String
-  parkingSpaceId    String
+  id                 String          @id @default(cuid())
+  plateNumber        String
+  parkingSpaceId     String
   parkingSpaceNumber String
-  locationId        String
-  entryDate         String
-  entryTime         String
-  exitDate          String?
-  exitTime          String?
-  duration          String?
-  fee               Float?
-  status            VehicleStatus @default(inside)
-  driverName        String?
-  vehicleType       String?
-  vehicleColor      String?
-  editHistory       Json?         @default("[]")
-  loyaltyRewardUsed Boolean       @default(false)
-  qrToken           String?       @unique
-  receiptNumber     String?       @unique
-  receiptGeneratedAt DateTime?
-  createdAt         DateTime      @default(now())
+  locationId         String
+  entryDate          String
+  entryTime          String
+  exitDate           String?
+  exitTime           String?
+  duration           String?
+  fee                Float?
+  status             VehicleStatus   @default(inside)
+  driverName         String?
+  vehicleType        String?
+  vehicleColor       String?
+  editHistory        Json?
+  createdAt          DateTime        @default(now())
+  qrToken            String?         @unique
+  location           ParkingLocation @relation(fields: [locationId], references: [id])
+  space              ParkingSpace    @relation(fields: [parkingSpaceId], references: [id])
 
-  space    ParkingSpace    @relation(fields: [parkingSpaceId], references: [id])
-  location ParkingLocation @relation(fields: [locationId], references: [id])
-
-  @@index([qrToken])
   @@index([plateNumber])
   @@index([locationId])
   @@index([parkingSpaceId])
@@ -125,23 +110,22 @@ model VehicleRecord {
 }
 
 model MonthlySubscriber {
-  id                 String        @id @default(cuid())
+  id                 String          @id @default(cuid())
   plateNumber        String
   driverName         String
-  phoneNumber        String?
-  vehicleType        String?
-  vehicleColor       String?
+  phoneNumber        String
+  vehicleType        String
+  vehicleColor       String
   startDate          String
   subscriptionPeriod Int
   paymentAmount      Float
   notes              String?
   expirationDate     String
   remainingDays      Int
-  paymentStatus      PaymentStatus @default(unpaid)
+  paymentStatus      PaymentStatus   @default(unpaid)
   locationId         String
-  createdAt          DateTime      @default(now())
-
-  location ParkingLocation @relation(fields: [locationId], references: [id])
+  createdAt          DateTime        @default(now())
+  location           ParkingLocation @relation(fields: [locationId], references: [id])
 
   @@index([plateNumber])
   @@index([locationId])
@@ -153,96 +137,37 @@ model MonthlySubscriber {
 }
 
 model SystemSettings {
-  id           String @id @default("default")
-  totalCapacity Int   @default(50)
-  hourlyRate1  Float  @default(1000)
-  hourlyRate2  Float  @default(1500)
-  hourlyRate3  Float  @default(2000)
-  currency     String @default("IQD")
-  timezone     String @default("Asia/Baghdad")
+  id                String  @id @default("default")
+  totalCapacity     Int     @default(50)
+  hourlyRate1       Float   @default(1000)
+  hourlyRate2       Float   @default(1500)
+  hourlyRate3       Float   @default(2000)
+  currency          String  @default("IQD")
+  timezone          String  @default("Asia/Baghdad")
   defaultLocationId String?
-  parkingName  String?
-  address      String?
-  phoneNumber  String?
-  companyLogo  String?
-  companyWebsite String?
-
-  // Loyalty Program Settings
-  loyaltyEnabled          Boolean @default(true)
-  loyaltyVisitsRequired   Int     @default(10)
-  loyaltyRewardType       String  @default("free_parking")
-  loyaltyDiscountPercent  Float   @default(50)
-  loyaltyFixedDiscount    Float   @default(0)
-  loyaltyRewardExpireDays Int     @default(0)
-  loyaltyIncludeSubscribers Boolean @default(false)
+  parkingName       String?
+  address           String?
+  phoneNumber       String?
+  companyLogo       String?
+  companyWebsite    String?
 
   @@map("system_settings")
 }
 
-model CustomerLoyalty {
-  id                  String   @id @default(cuid())
-  licensePlate        String   @unique
-  customerName        String?
-  phoneNumber         String?
-  notes               String?  @db.Text
-  totalVisits         Int      @default(0)
-  availableRewards    Int      @default(0)
-  totalRewardsEarned  Int      @default(0)
-  totalRewardsRedeemed Int     @default(0)
-  lastVisit           DateTime?
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-
-  loyaltyLogs LoyaltyLog[]
-
-  @@index([licensePlate])
-  @@index([phoneNumber])
-  @@index([totalVisits])
-  @@index([availableRewards])
-  @@index([lastVisit])
-  @@index([createdAt])
-  @@map("customer_loyalty")
-}
-
-model LoyaltyLog {
-  id            String   @id @default(cuid())
-  loyaltyId     String
-  eventType     LoyaltyEventType
-  description   String   @db.Text
-  visitsBefore  Int      @default(0)
-  visitsAfter   Int      @default(0)
-  rewardsBefore Int      @default(0)
-  rewardsAfter  Int      @default(0)
-  vehicleRecordId String?
-  performedBy   String?
-  performedByRole String?
-  ipAddress     String?
-  timestamp     DateTime @default(now())
-
-  loyalty CustomerLoyalty @relation(fields: [loyaltyId], references: [id], onDelete: Cascade)
-
-  @@index([loyaltyId])
-  @@index([eventType])
-  @@index([timestamp])
-  @@index([vehicleRecordId])
-  @@map("loyalty_logs")
-}
-
 model ActivityLog {
-  id         String   @id @default(cuid())
-  userId     String?
+  id         String           @id @default(cuid())
+  userId     String
   username   String
   userRole   UserRole
-  action     String   @db.Text
+  action     String           @db.Text
   category   String
-  oldValue   String?  @db.Text
-  newValue   String?  @db.Text
-  timestamp  DateTime @default(now())
+  oldValue   String?          @db.Text
+  newValue   String?          @db.Text
+  timestamp  DateTime         @default(now())
   ipAddress  String?
   locationId String?
-
-  user     User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
-  location ParkingLocation? @relation(fields: [locationId], references: [id])
+  location   ParkingLocation? @relation(fields: [locationId], references: [id])
+  user       User             @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([username])
@@ -278,14 +203,4 @@ enum VehicleStatus {
 enum PaymentStatus {
   paid
   unpaid
-}
-
-enum LoyaltyEventType {
-  visit_added
-  reward_earned
-  reward_redeemed
-  manual_adjustment
-  reset_by_admin
-  points_added
-  points_removed
 }
